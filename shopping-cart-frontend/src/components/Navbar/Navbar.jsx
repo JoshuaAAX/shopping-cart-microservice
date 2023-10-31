@@ -4,16 +4,13 @@ import Toolbar from "@mui/material/Toolbar";
 import IconButton from "@mui/material/IconButton";
 import MenuIcon from "@mui/icons-material/Menu";
 import Typography from "@mui/material/Typography";
-import AddShoppingCartIcon from "@mui/icons-material/AddShoppingCart";
 import Box from "@mui/material/Box";
 import logo from "../../Images/logo.png";
+import ShoppingCartOutlinedIcon from '@mui/icons-material/ShoppingCartOutlined';
 
 function Navbar() {
   return (
-    <AppBar
-      position="static"
-      sx={{ backgroundColor: "#FBB402", width: "100%", margin: "0 auto" }}
-    >
+    <AppBar sx={{backgroundColor: '#FBB500'}} position="fixed">
       <Toolbar variant="dense">
         <IconButton
           edge="start"
@@ -40,13 +37,14 @@ function Navbar() {
             </Typography>
         <Box sx={{ flexGrow: 1 }} />
         <IconButton
-          edge="start"
-          color="inherit"
-          aria-label="add to shopping cart"
-          sx={{ mr: 2 }}
-        >
-          <AddShoppingCartIcon />
-        </IconButton>
+                size="large"
+                edge="end"
+                aria-label="account of current user"
+                aria-haspopup="true"
+                color="inherit"
+              >
+                <ShoppingCartOutlinedIcon />
+              </IconButton>
       </Toolbar>
     </AppBar>
   );
