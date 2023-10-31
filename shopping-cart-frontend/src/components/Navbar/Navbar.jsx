@@ -6,6 +6,7 @@ import MenuIcon from "@mui/icons-material/Menu";
 import Typography from "@mui/material/Typography";
 import AddShoppingCartIcon from "@mui/icons-material/AddShoppingCart";
 import Box from "@mui/material/Box";
+import logo from "../../Images/logo.png";
 
 function Navbar() {
   return (
@@ -22,9 +23,21 @@ function Navbar() {
         >
           <MenuIcon />
         </IconButton>
-        <Typography variant="h6" color="inherit" component="div">
-          Logo
-        </Typography>
+        <img
+          src={logo}
+          alt="Logo"
+          width={60}
+          height={52}
+        />
+        <Typography
+              variant="h6"
+              noWrap
+              fontWeight="bold"
+              component="div"
+              sx={{ display: { xs: 'none', sm: 'block' }, paddingRight: 1 }}
+            >
+              Thunder Foods
+            </Typography>
         <Box sx={{ flexGrow: 1 }} />
         <IconButton
           edge="start"
