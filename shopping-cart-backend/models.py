@@ -5,8 +5,9 @@ from database import Base
 
 class Product(Base):
     __tablename__ = "product"
-
-    product_id = Column(String, primary_key=True, index=True)
+    
+    order_id = Column(String, primary_key=True, index=True)
+    product_id = Column(String, index=True)
     user_id = Column(String, index=True)
     name = Column(String, index=True)
     count = Column(Integer, index=True)

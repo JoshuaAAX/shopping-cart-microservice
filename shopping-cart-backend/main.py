@@ -5,11 +5,21 @@ from datetime import datetime
 import models
 from database import engine,  SessionLocal
 from sqlalchemy.orm  import Session
+from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
+origins = ["*"] 
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],  # Permite todos los métodos HTTP (GET, POST, etc.)
+    allow_headers=["*"],  # Permite todas las cabeceras HTTP
+)
 models.Base.metadata.create_all(bind=engine)
 
 class Product(BaseModel):
+    order_id: str
     product_id: str
     user_id: str
     name:  str
@@ -26,11 +36,10 @@ def get_db():
 
 db_dependency = Annotated[Session, Depends(get_db)]
 
-cart = []
-
 @app.post("/add-shopping-cart")
 async def save_product(product: Product, db: db_dependency):
     db_product = models.Product(
+        order_id= product.order_id,
         product_id=product.product_id,
         user_id=product.user_id,
         name=product.name,
@@ -62,10 +71,11 @@ async def get_user_products(user_id: str, db: db_dependency):
        raise HTTPException(status_code=500, detail="Error al obtener los  productos del  usuario de la  base de datos")
 
 
-@app.put("/new-quantity-shopping-cart/{user_id}/{product_id}")
-async def  update_product_quantity(product_id:str, new_quantity:int, user_id:str, db: db_dependency):
+@app.put("/new-quantity-shopping-cart/{order_id}/{new_quantity}")
+async def  update_product_quantity(new_quantity:int, order_id:str, db: db_dependency):
     try:
-        productCart = db.query(models.Product).filter(models.Product.user_id == user_id, models.Product.product_id == product_id).first()
+      if new_quantity>=0:  
+        productCart = db.query(models.Product).filter(models.Product.order_id == order_id).first()
         
         if productCart is not None:
             productCart.count =  new_quantity
@@ -78,6 +88,21 @@ async def  update_product_quantity(product_id:str, new_quantity:int, user_id:str
         raise HTTPException(status_code=500, detail="Error al editar la cantidad del producto en la base de datos")    
 
 
+@app.delete("/remove-from-cart/{order_id}")
+async def remove_from_cart(order_id: str, db: db_dependency):
+    try:
+        productCart = db.query(models.Product).filter(models.Product.order_id == order_id).first()
+
+        if productCart:
+            db.delete(productCart)
+            db.commit()
+            return {"message": "Producto eliminado del carrito exitosamente"}
+        else:
+            raise HTTPException(status_code=404, detail="Producto no encontrado en el carrito")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail="Error al eliminar el producto del carrito")
+
+
 @app.delete("/delete-product-shopping-cart/{user_id}")
 async def clear_user_products(user_id: str, db: db_dependency):
     try:
@@ -86,8 +111,8 @@ async def clear_user_products(user_id: str, db: db_dependency):
         if productsCart:
             for product in productsCart:
                 db.delete(product)
-                db.commit
-        
+            db.commit
+
             return {"message": f"Todos los productos del usuario con ID {user_id} han sido eliminados"}
         else:
             raise HTTPException(status_code=404, detail=f"No se encontraron productos para el usuario con ID {user_id}")

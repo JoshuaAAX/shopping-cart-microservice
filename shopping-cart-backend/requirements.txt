@@ -8,5 +8,10 @@ requests-file==1.5.1
 requests-ftp==0.3.1
 SQLAlchemy==2.0.15
 uvicorn==0.23.2
-
-
+typing
+Click
+h11
+httptools
+starlette
+uvloop
+websockets
